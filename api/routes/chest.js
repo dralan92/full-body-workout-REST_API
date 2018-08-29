@@ -1,6 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
+const multer = require('multer');
+const storage = multer.diskStorage({
+    destination: function(req, file, cb){
+        cb(null, './uploads/');
+    },
+    filename: function(req, file, cb){
+        cb(null, file.originalname);
+    }
+});
+const upload = multer({storage: storage});
 
 const Chest = require('../models/chest');
 
@@ -34,7 +44,8 @@ router.get('/:muscleId', (req,res,next)=>{
     
     });
 });
-router.post('/', (req,res,next)=>{
+router.post('/',upload.single('chestImage'), (req,res,next)=>{
+    console.log(req.file);
     const chest = new Chest({
         _id: new mongoose.Types.ObjectId(),
         muscles: req.body.muscles
